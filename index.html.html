@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culinary & Me - Biluhu, Gorontalo</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            yellow: '#fef08a', 
+                            pink: '#fbcfe8',   
+                            blue: '#bfdbfe',   
+                            white: '#ffffff',
+                            dark: '#334155'    
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'wiggle': 'wiggle 1s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Base styles */
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Flip Card Styles */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.active .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        .flip-card-front {
+            background-color: white;
+            border: 2px solid #bfdbfe; 
+        }
+        .flip-card-back {
+            background-color: #fbcfe8; 
+            color: #334155;
+            transform: rotateY(180deg);
+            border: 2px solid #f9a8d4;
+        }
+
+        /* Glassmorphism */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Vertical Flashcard Game Styles */
+        .v-flashcard {
+            perspective: 1000px;
+            width: 100%;
+            height: 220px; 
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+        }
+        .v-flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transform-style: preserve-3d;
+        }
+        .v-flashcard.flipped .v-flashcard-inner { transform: rotateX(180deg); }
+        .v-flashcard.mastered .v-flashcard-inner {
+            transform: rotateX(180deg) scale(0.95);
+            opacity: 0.8;
+        }
+        .v-flashcard-front, .v-flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            border: 4px solid transparent;
+        }
+        .v-flashcard-front {
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            border-color: #bfdbfe;
+        }
+        .v-flashcard-back {
+            background: linear-gradient(135deg, #fbcfe8 0%, #fef08a 100%);
+            border-color: #f472b6;
+            transform: rotateX(180deg); 
+        }
+        
+        .pulse-anim { animation: pulse-border 2s infinite; }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.5); }
+            70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        /* Hide sections initially */
+        .module-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .module-section.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Spinner Loader */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-pastel-blue via-pastel-white to-pastel-pink min-h-screen flex flex-col font-sans">
+
+    <!-- Navbar / Top Dashboard Menu -->
+    <nav class="glass-panel sticky top-0 z-50 shadow-sm border-b border-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo / Title -->
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-pastel-yellow rounded-full flex items-center justify-center text-xl shadow-inner shadow-yellow-400">🍲</div>
+                    <span class="font-bold text-xl text-pastel-dark tracking-tight">Culinary & Me</span>
+                </div>
+                <!-- Navigation Buttons -->
+                <div class="flex space-x-1 sm:space-x-4 overflow-x-auto no-scrollbar">
+                    <button onclick="nav('home')" id="nav-home" class="nav-btn px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold transition-colors bg-pastel-yellow shadow-md text-pastel-dark">Home</button>
+                    <button onclick="nav('learn')" id="nav-learn" class="nav-btn px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold transition-colors hover:bg-pastel-yellow hover:shadow-md text-pastel-dark">Learn</button>
+                    <button onclick="nav('explore')" id="nav-explore" class="nav-btn px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold transition-colors hover:bg-pastel-yellow hover:shadow-md text-pastel-dark">Explore</button>
+                    <button onclick="nav('quiz')" id="nav-quiz" class="nav-btn px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold transition-colors hover:bg-pastel-yellow hover:shadow-md text-pastel-dark">Quiz</button>
+                    <button onclick="nav('data'); loadScoreboardData();" id="nav-data" class="nav-btn px-3 sm:px-4 py-2 rounded-xl text-sm font-semibold transition-colors hover:bg-pastel-yellow hover:shadow-md text-pastel-dark flex items-center gap-1">📊 Data</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- MODULE 1: HOME -->
+        <section id="module-home" class="module-section active">
+            <!-- Developer & School Identity Banner -->
+            <div class="bg-gradient-to-r from-amber-100 via-pink-100 to-blue-100 rounded-3xl p-6 shadow-lg mb-6 border-2 border-white flex flex-col md:flex-row items-center justify-center md:justify-start gap-6">
+                <!-- SVG Avatar Kartun Guru -->
+                <div class="relative flex-shrink-0">
+                    <div class="w-32 h-32 sm:w-36 sm:h-36 bg-white rounded-full p-2 shadow-md border-4 border-amber-600 flex items-center justify-center overflow-hidden">
+                        <svg viewBox="0 0 200 200" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+                                    <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#4a2e1b" flood-opacity="0.15"/>
+                                </filter>
+                                <filter id="blush">
+                                    <feGaussianBlur stdDeviation="2.5"/>
+                                </filter>
+                            </defs>
+                            <circle cx="100" cy="100" r="95" fill="#fdfbf7" />
+                            <circle cx="100" cy="100" r="90" fill="#fef08a" opacity="0.3"/>
+                            <path d="M 40 140 C 30 70, 55 20, 100 20 C 145 20, 170 70, 160 140 C 160 170, 140 200, 100 200 C 60 200, 40 170, 40 140 Z" fill="#9c6644" />
+                            <path d="M 85 120 L 115 120 L 115 150 L 85 150 Z" fill="#e6b999" />
+                            <path d="M 85 120 C 95 128, 105 128, 115 120 L 115 135 L 85 135 Z" fill="#d4a382" opacity="0.7" />
+                            <path d="M 25 200 C 25 145, 65 140, 100 140 C 135 140, 175 145, 175 200 Z" fill="#fbcfe8" />
+                            <path d="M 70 140 L 100 175 L 130 140 Z" fill="#fdf2f8" />
+                            <path d="M 100 175 L 100 200" stroke="#f472b6" stroke-width="2.5" stroke-dasharray="4,4" stroke-linecap="round"/>
+                            <circle cx="100" cy="185" r="3" fill="#f472b6" />
+                            <path d="M 65 140 C 75 160, 95 175, 100 175 C 105 175, 125 160, 135 140" fill="none" stroke="#f472b6" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+                            <path d="M 58 80 C 50 120, 65 152, 100 152 C 135 152, 150 120, 142 80 C 130 68, 70 68, 58 80 Z" fill="#ffebd6" />
+                            <path d="M 45 92 C 25 155, 65 205, 100 205 C 135 205, 175 155, 155 92 C 145 125, 125 152, 100 152 C 75 152, 55 125, 45 92 Z" fill="#9c6644" filter="url(#softShadow)"/>
+                            <ellipse cx="74" cy="116" rx="8" ry="5" fill="#ffb5a7" opacity="0.85" filter="url(#blush)"/>
+                            <ellipse cx="126" cy="116" rx="8" ry="5" fill="#ffb5a7" opacity="0.85" filter="url(#blush)"/>
+                            <path d="M 68 93 Q 78 88, 88 92" fill="none" stroke="#5c3a21" stroke-width="3.5" stroke-linecap="round"/>
+                            <path d="M 112 92 Q 122 88, 132 93" fill="none" stroke="#5c3a21" stroke-width="3.5" stroke-linecap="round"/>
+                            <circle cx="78" cy="104" r="5.5" fill="#2b1a10" />
+                            <circle cx="122" cy="104" r="5.5" fill="#2b1a10" />
+                            <circle cx="76.5" cy="102" r="1.8" fill="#ffffff" />
+                            <circle cx="120.5" cy="102" r="1.8" fill="#ffffff" />
+                            <path d="M 70 102 Q 78 95, 86 104" fill="none" stroke="#2b1a10" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M 114 104 Q 122 95, 130 102" fill="none" stroke="#2b1a10" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M 98 116 Q 100 118, 102 116" fill="none" stroke="#d69f8c" stroke-width="2.5" stroke-linecap="round"/>
+                            <path d="M 88 128 Q 100 136, 112 128 Q 100 132, 88 128 Z" fill="#d90429" opacity="0.8"/>
+                            <path d="M 85 126 Q 100 134, 115 126" fill="none" stroke="#b23a48" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex-1 text-center md:text-left">
+                    <div class="inline-block bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full text-xs font-extrabold text-amber-900 mb-2 border border-amber-300 shadow-sm">
+                        🏫 MTs Muhajirin Biluhu
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-pastel-dark tracking-tight">
+                        Miss Nanda
+                    </h2>
+                </div>
+            </div>
+
+            <!-- Home Hero Card -->
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2">
+                    <div class="p-8 md:p-12 flex flex-col justify-center">
+                        <span class="text-sm font-bold tracking-wider text-blue-500 uppercase mb-2">Phase D / Grade VII</span>
+                        <h1 class="text-4xl sm:text-5xl font-extrabold text-pastel-dark mb-4 leading-tight">
+                            Explore <span class="text-pink-500">Gorontalo's</span> Delicious Foods!
+                        </h1>
+                        <p class="text-gray-600 mb-6 text-lg">
+                            Welcome, students of MTs! From the beautiful beaches of Biluhu to the rich farms of our village, let's learn how to describe our favorite local foods in English.
+                        </p>
+                        <div class="flex flex-wrap gap-4">
+                            <button onclick="nav('learn')" class="bg-pastel-blue hover:bg-blue-300 text-pastel-dark font-bold py-3 px-8 rounded-full shadow-lg transform transition hover:-translate-y-1">
+                                Start Learning 🚀
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-pastel-yellow p-8 flex items-center justify-center relative overflow-hidden min-h-[300px]">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full mix-blend-overlay filter blur-2xl opacity-50 animate-pulse"></div>
+                        <svg class="w-full h-auto max-w-sm drop-shadow-2xl z-10" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="200" cy="150" r="140" fill="#fbcfe8" opacity="0.6"/>
+                            <circle cx="280" cy="80" r="40" fill="#fef08a" class="animate-bounce-slow"/>
+                            <path d="M40 220 Q 120 180 200 220 T 360 220 L 360 300 L 40 300 Z" fill="#bfdbfe"/>
+                            <path d="M 100 260 Q 80 200 120 160 Q 140 200 120 260 Z" fill="#4ade80"/>
+                            <ellipse cx="115" cy="200" rx="15" ry="35" fill="#facc15" transform="rotate(15 115 200)"/>
+                            <path d="M 300 260 Q 310 180 290 120" stroke="#78350f" stroke-width="8" fill="none"/>
+                            <path d="M 290 120 Q 250 100 240 140 Q 270 120 290 120" fill="#22c55e"/>
+                            <path d="M 290 120 Q 320 80 340 110 Q 310 110 290 120" fill="#22c55e"/>
+                            <path d="M 160 240 C 160 280, 240 280, 240 240 Z" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+                            <ellipse cx="200" cy="240" rx="40" ry="10" fill="#fef08a"/>
+                            <path d="M 180 235 Q 200 220 220 235 Q 200 250 180 235" fill="#f97316"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2: LEARN -->
+        <section id="module-learn" class="module-section">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-pastel-dark mb-2">Food Vocabulary</h2>
+                <p class="text-gray-600">Tap the cards to reveal the English words for Tastes and Textures!</p>
+            </div>
+
+            <!-- Taste Section -->
+            <div class="bg-white rounded-3xl shadow-lg p-6 sm:p-8 mb-8">
+                <h3 class="text-xl font-bold text-pink-500 mb-4 flex items-center gap-2">
+                    <span class="text-2xl">👅</span> Tastes (Rasa)
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Manis</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold">
+                                Sweet 🍬<span class="text-xs mt-2 block font-normal">Like Es Brenebon</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Pedas</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold" style="background-color: #fca5a5; border-color: #f87171;">
+                                Spicy 🌶️<span class="text-xs mt-2 block font-normal">Like Dabu-dabu</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Asam</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold" style="background-color: #fef08a; border-color: #eab308;">
+                                Sour 🍋<span class="text-xs mt-2 block font-normal">Like Jeruk Nipis</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Gurih</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold" style="background-color: #fed7aa; border-color: #f97316;">
+                                Savory 🍲<span class="text-xs mt-2 block font-normal">Like Binte Biluhuta</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Asin</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold" style="background-color: #e0f2fe; border-color: #38bdf8;">
+                                Salty 🧂<span class="text-xs mt-2 block font-normal">Like Salted Fish</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Texture Section -->
+            <div class="bg-white rounded-3xl shadow-lg p-6 sm:p-8">
+                <h3 class="text-xl font-bold text-blue-500 mb-4 flex items-center gap-2">
+                    <span class="text-2xl">🖐️</span> Textures (Tekstur)
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Renyah</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold bg-pastel-yellow">
+                                Crunchy 🥨<span class="text-xs mt-2 block font-normal">Like Ikan Bakar Skin</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Kenyal/Lengket</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold bg-pastel-pink">
+                                Sticky / Chewy 🍡<span class="text-xs mt-2 block font-normal">Like Ilabulo (Sago)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Lembut</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold bg-pastel-blue">
+                                Soft ☁️<span class="text-xs mt-2 block font-normal">Like Fish Meat</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-32 flip-card" onclick="this.classList.toggle('active')">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front text-lg font-bold text-gray-700 flex-col">
+                                <span>Garing/Keras</span><span class="text-sm text-gray-400 font-normal mt-2">Tap to flip</span>
+                            </div>
+                            <div class="flip-card-back text-xl font-bold" style="background-color: #d1d5db; border-color: #9ca3af;">
+                                Crispy 🍟<span class="text-xs mt-2 block font-normal">Like Keripik Pisang</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 text-center">
+                <button onclick="nav('explore')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full shadow-lg transition">
+                    Let's Practice! 🎮
+                </button>
+            </div>
+            <div class="mt-12 mb-4 text-center">
+                <p class="text-sm font-bold text-gray-400/80 tracking-widest uppercase">Pengembang: Miss Nanda</p>
+            </div>
+        </section>
+
+        <!-- MODULE 3: EXPLORE (Match Game) -->
+        <section id="module-explore" class="module-section">
+            <div class="bg-white rounded-3xl shadow-xl p-6 sm:p-10">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-pastel-dark mb-2">Flashcard Challenge! 🎮</h2>
+                    <p class="text-gray-600 mb-6">Tap kartu untuk membaliknya. Uji ingatanmu tentang rasa & tekstur kuliner Biluhu!</p>
+                    
+                    <div class="w-full max-w-md mx-auto bg-gray-200 rounded-full h-4 mb-2 shadow-inner">
+                        <div id="fc-progress" class="bg-gradient-to-r from-blue-400 to-pink-400 h-4 rounded-full transition-all duration-700 ease-out" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm font-bold text-blue-600"><span id="fc-score">0</span> / 5 Mastered</p>
+                </div>
+
+                <div id="flashcard-container" class="flex flex-col max-w-2xl mx-auto gap-4"></div>
+
+                <div class="mt-8 text-center hidden" id="fc-complete">
+                    <div class="inline-block bg-green-100 border-2 border-green-500 text-green-700 px-6 py-4 rounded-2xl mb-4 font-bold text-xl animate-bounce">
+                        Luar Biasa! Kamu berhasil menguasai semua kosakatanya! 🎉
+                    </div>
+                    <br>
+                    <button onclick="nav('quiz')" class="bg-pastel-blue hover:bg-blue-300 text-pastel-dark font-black py-4 px-10 rounded-full shadow-lg transition transform hover:-translate-y-1 text-lg">
+                        Lanjut ke Kuis Formatif 📝
+                    </button>
+                </div>
+            </div>
+            <div class="mt-8 mb-4 text-center">
+                <p class="text-sm font-bold text-gray-400/80 tracking-widest uppercase">Pengembang: Miss Nanda</p>
+            </div>
+        </section>
+
+        <!-- MODULE 4: QUIZ -->
+        <section id="module-quiz" class="module-section">
+            <div class="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden relative">
+                
+                <div id="quiz-auth-card" class="p-8 sm:p-12 text-center">
+                    <div class="w-20 h-20 bg-pastel-yellow rounded-full flex items-center justify-center text-4xl shadow-md mx-auto mb-4">📝</div>
+                    <h2 class="text-3xl font-extrabold text-pastel-dark mb-2">Formulir Peserta Kuis</h2>
+                    <p class="text-gray-600 text-sm mb-6">
+                        Silakan isi nama lengkap dan kelasmu terlebih dahulu sebelum mengerjakan Kuis Formatif. Nilai akan otomatis tersimpan ke <b>Database Google Sheets</b> Miss Nanda.
+                    </p>
+
+                    <!-- Alert Fetching Database -->
+                    <div id="quiz-loading-alert" class="hidden mb-4 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl p-3 text-sm flex items-center justify-center gap-2">
+                        <div class="loader" style="width: 15px; height: 15px; border-width: 2px;"></div> Mengambil data soal dari database...
+                    </div>
+
+                    <form id="student-info-form" onsubmit="startQuizWithStudent(event)" class="space-y-4 text-left max-w-md mx-auto">
+                        <div>
+                            <label for="student-name-input" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Nama Lengkap Siswa <span class="text-red-500">*</span></label>
+                            <input type="text" id="student-name-input" required placeholder="Masukkan Nama Lengkap" class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition font-medium text-gray-800">
+                        </div>
+
+                        <div>
+                            <label for="student-class-input" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1">Kelas <span class="text-red-500">*</span></label>
+                            <select id="student-class-input" required class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-blue-500 focus:outline-none transition font-medium text-gray-800 bg-white">
+                                <option value="" disabled selected>-- Pilih Kelas --</option>
+                                <option value="VII-A">Kelas VII-A</option>
+                                <option value="VII-B">Kelas VII-B</option>
+                                <option value="VII-C">Kelas VII-C</option>
+                            </select>
+                        </div>
+
+                        <div class="pt-2">
+                            <button id="start-quiz-btn" type="submit" class="w-full bg-pastel-yellow hover:bg-yellow-400 text-pastel-dark font-extrabold py-3.5 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-0.5 flex items-center justify-center gap-2 text-lg">
+                                🚀 Mulai Kerjakan Kuis
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="quiz-header" class="bg-pastel-blue p-6 text-center hidden">
+                    <div class="flex justify-between items-center mb-2 text-xs font-bold text-blue-900 bg-white/60 px-3 py-1.5 rounded-lg border border-white">
+                        <span>👤 Siswa: <strong id="disp-student-name">-</strong></span>
+                        <span>🏫 Kelas: <strong id="disp-student-class">-</strong></span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-pastel-dark mt-2 mb-1">Formative Quiz</h2>
+                    <div class="w-full bg-blue-200 rounded-full h-2.5 mt-3">
+                        <div id="quiz-progress" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 20%"></div>
+                    </div>
+                    <p class="text-sm font-semibold text-blue-800 mt-2">Question <span id="q-current">1</span> of <span id="q-total">5</span></p>
+                </div>
+
+                <div id="quiz-container" class="p-6 sm:p-10 hidden">
+                    <h3 id="question-text" class="text-xl font-bold text-gray-800 mb-6 leading-relaxed">Loading question...</h3>
+                    <div id="options-container" class="flex flex-col gap-3"></div>
+                    <div id="quiz-feedback" class="mt-6 hidden rounded-2xl p-4 border-2 transition-all">
+                        <div class="flex items-start gap-3">
+                            <div id="feedback-icon" class="text-2xl">💡</div>
+                            <div>
+                                <h4 id="feedback-title" class="font-bold text-lg mb-1"></h4>
+                                <p id="feedback-desc" class="text-gray-700 text-sm leading-relaxed"></p>
+                            </div>
+                        </div>
+                        <button id="next-btn" onclick="nextQuestion()" class="mt-4 w-full bg-pastel-dark text-white font-bold py-3 rounded-xl hover:bg-gray-800 transition shadow-md hidden">
+                            Next Question ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <div id="result-container" class="p-8 sm:p-10 text-center hidden flex flex-col items-center justify-center min-h-[400px]">
+                    <div class="w-full bg-amber-50 border-4 border-amber-200 rounded-2xl p-6 shadow-inner mb-6 relative overflow-hidden">
+                        <div class="absolute -right-6 -bottom-6 text-9xl opacity-10 select-none">🏆</div>
+                        <div class="text-xs font-bold uppercase tracking-widest text-amber-800 mb-1">Laporan Hasil Kuis Siswa</div>
+                        <h3 class="text-2xl font-black text-gray-800">MTs Muhajirin Biluhu</h3>
+                        <p class="text-xs text-gray-500 mb-4">Mata Pelajaran: Bahasa Inggris (Fase D / Kelas VII)</p>
+
+                        <div class="bg-white/80 rounded-xl p-4 border border-amber-200 mb-4 inline-block w-full max-w-md">
+                            <p class="text-sm text-gray-600">Nama Siswa: <strong id="res-student-name" class="text-gray-900 text-base"></strong></p>
+                            <p class="text-sm text-gray-600">Kelas: <strong id="res-student-class" class="text-gray-900"></strong></p>
+                        </div>
+
+                        <div class="text-5xl font-black text-blue-600 mb-2 drop-shadow-md">
+                            <span id="final-score">0</span><span class="text-2xl text-gray-400">/100</span>
+                        </div>
+                        <p id="result-message" class="text-sm font-medium text-gray-700 p-3 bg-white rounded-xl border border-amber-100 mb-4"></p>
+                        
+                        <!-- Status Penyimpanan Database -->
+                        <div id="save-status" class="bg-blue-100 text-blue-700 p-2 rounded text-xs font-bold animate-pulse">
+                            <div class="loader" style="width: 12px; height: 12px; border-width: 2px;"></div> Menyimpan hasil ke Google Sheets...
+                        </div>
+
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4 justify-center">
+                        <button onclick="resetQuiz()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-6 rounded-full transition">
+                            🔄 Ulangi Kuis
+                        </button>
+                        <button onclick="nav('home')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition">
+                            🏠 Kembali ke Beranda
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="mt-8 text-center">
+                <p class="text-sm font-bold text-gray-400/80 tracking-widest uppercase">Pengembang: Miss Nanda</p>
+            </div>
+        </section>
+
+        <!-- MODULE 5: DATA (Database / Spreadsheet View) -->
+        <section id="module-data" class="module-section">
+            <div class="bg-white rounded-3xl shadow-xl p-6 sm:p-10">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-pastel-dark mb-2">📊 Database Nilai Siswa</h2>
+                    <p class="text-gray-600 mb-6">Data hasil kuis formatif tersimpan secara real-time dari Google Sheets dan disusun seperti tabel.</p>
+                </div>
+
+                <div class="overflow-x-auto bg-white rounded-2xl border-2 border-gray-200 shadow-sm">
+                    <table class="w-full text-left border-collapse min-w-max">
+                        <thead>
+                            <tr class="bg-blue-100 text-blue-900 border-b-2 border-blue-200">
+                                <th class="p-4 font-bold border-r border-blue-200 w-16 text-center">No</th>
+                                <th class="p-4 font-bold border-r border-blue-200">Nama Lengkap Siswa</th>
+                                <th class="p-4 font-bold border-r border-blue-200 w-32">Kelas</th>
+                                <th class="p-4 font-bold border-r border-blue-200 w-32 text-center">Nilai Kuis</th>
+                                <th class="p-4 font-bold w-48">Waktu Selesai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="spreadsheet-body">
+                            <tr>
+                                <td colspan="5" class="p-6 text-center text-gray-500 font-medium">⏳ Silakan tekan tombol Data untuk memuat ulang dari Google Sheets...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p class="text-sm font-bold text-gray-400/80 tracking-widest uppercase">Pengembang: Miss Nanda</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // ==========================================
+        // KONFIGURASI GOOGLE APPS SCRIPT (DATABASE)
+        // ==========================================
+        // GANTI URL DI BAWAH INI DENGAN URL WEB APP MILIK ANDA
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbz3Qd6pW0yLBbhCeGltYAld0iU1G4k8W8LFuVXQPJCDvO9qwcpoy2bE_6Xou6P90uUs/exec"; 
+        
+        // ==========================================
+        // STATE APLIKASI
+        // ==========================================
+        let currentStudentName = "";
+        let currentStudentClass = "";
+        
+        // Default Soal (Fallback jika koneksi GAS gagal/belum diset)
+        let quizData = [
+            {
+                question: "What does 'Binte Biluhuta' mostly taste like?",
+                options: ["Sweet (Manis)", "Savory and Spicy (Gurih & Pedas)", "Bitter (Pahit)", "Sour (Asam)"],
+                correct: 1, explanation: "Binte Biluhuta is a traditional Gorontalo corn soup that is savory (gurih) from grated coconut and often spicy (pedas)."
+            },
+            {
+                question: "The texture of grilled fish (ikan bakar) skin is usually...",
+                options: ["Sticky (Lengket)", "Crunchy (Renyah)", "Liquid (Cair)", "Soft (Lembut)"],
+                correct: 1, explanation: "When fish is grilled over fire, the skin becomes crunchy (renyah) while the meat inside stays soft."
+            },
+            {
+                question: "Read this text: 'My favorite drink is Es Kelapa Muda from Biluhu beach. It is very refreshing and sweet.'<br><br>What is the taste of the drink?",
+                options: ["Sour (Asam)", "Sweet (Manis)", "Salty (Asin)", "Bitter (Pahit)"],
+                correct: 1, explanation: "The text clearly states that the drink is 'refreshing and sweet' (manis)."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let isAnswered = false;
+        let userDetailedAnswers = []; // Menyimpan teks jawaban untuk analisa guru
+
+        // ==========================================
+        // FETCH DATA DARI GOOGLE SHEETS
+        // ==========================================
+        
+        // Mengambil pertanyaan dari GAS saat halaman dimuat
+        async function fetchQuestionsFromGAS() {
+            if (GAS_URL === "ISI_DENGAN_URL_WEB_APP_ANDA_DISINI") return; // Gunakan default jika belum diset
+
+            const alertEl = document.getElementById('quiz-loading-alert');
+            const btnEl = document.getElementById('start-quiz-btn');
+            
+            try {
+                alertEl.classList.remove('hidden');
+                btnEl.disabled = true;
+                btnEl.classList.add('opacity-50');
+
+                const response = await fetch(GAS_URL + "?action=getQuestions");
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    quizData = data; // Ganti default dengan data dari Sheets
+                }
+            } catch (error) {
+                console.error("Gagal mengambil soal dari Sheets, menggunakan default.", error);
+            } finally {
+                alertEl.classList.add('hidden');
+                btnEl.disabled = false;
+                btnEl.classList.remove('opacity-50');
+            }
+        }
+
+        // Mengambil Scoreboard dari GAS
+        async function loadScoreboardData() {
+            const tbody = document.getElementById('spreadsheet-body');
+            tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 font-medium"><div class="loader" style="width:15px;height:15px;border-width:2px;"></div> Mengambil data dari Google Sheets...</td></tr>`;
+            
+            if (GAS_URL === "ISI_DENGAN_URL_WEB_APP_ANDA_DISINI") {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-medium">Harap masukkan URL Google Apps Script Anda di kode HTML (GAS_URL).</td></tr>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(GAS_URL + "?action=getResults");
+                let data = await response.json();
+                
+                // Urutkan nilai tertinggi
+                data.sort((a, b) => b.score - a.score);
+                
+                tbody.innerHTML = '';
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-gray-500 font-medium">Belum ada data siswa yang masuk.</td></tr>`;
+                    return;
+                }
+
+                data.forEach((row, index) => {
+                    const date = new Date(row.timestamp);
+                    const dateString = isNaN(date) ? row.timestamp : date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                    const timeString = isNaN(date) ? "" : date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + " WIB";
+                    
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-gray-200 hover:bg-gray-50 transition-colors";
+                    tr.innerHTML = `
+                        <td class="p-4 text-gray-700 text-center border-r border-gray-100">${index + 1}</td>
+                        <td class="p-4 font-bold text-gray-900 border-r border-gray-100 uppercase text-sm">${row.name}</td>
+                        <td class="p-4 text-gray-700 border-r border-gray-100">
+                            <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-md border border-amber-200">${row.className}</span>
+                        </td>
+                        <td class="p-4 font-black text-center text-xl text-blue-600 border-r border-gray-100">${row.score}</td>
+                        <td class="p-4 text-xs text-gray-500">
+                            <span class="block font-semibold text-gray-700">${dateString}</span>
+                            <span>${timeString}</span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error fetching scoreboard: ", error);
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-red-500 font-medium">Gagal memuat data. Periksa URL GAS dan Koneksi.</td></tr>`;
+            }
+        }
+
+
+        // ==========================================
+        // QUIZ LOGIC
+        // ==========================================
+        function startQuizWithStudent(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('student-name-input').value.trim();
+            const classInput = document.getElementById('student-class-input').value;
+
+            if (!nameInput || !classInput) return;
+
+            currentStudentName = nameInput;
+            currentStudentClass = classInput;
+
+            document.getElementById('disp-student-name').innerText = currentStudentName;
+            document.getElementById('disp-student-class').innerText = currentStudentClass;
+            document.getElementById('q-total').innerText = quizData.length;
+
+            document.getElementById('quiz-auth-card').classList.add('hidden');
+            document.getElementById('quiz-header').classList.remove('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+
+            currentQuestion = 0;
+            score = 0;
+            userDetailedAnswers = [];
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            isAnswered = false;
+            const q = quizData[currentQuestion];
+            
+            const qCurrentEl = document.getElementById('q-current');
+            const progressEl = document.getElementById('quiz-progress');
+            
+            qCurrentEl.innerText = currentQuestion + 1;
+            progressEl.style.width = ((currentQuestion) / quizData.length * 100) + "%";
+            if(currentQuestion === 0) progressEl.style.width = "10%";
+
+            document.getElementById('question-text').innerHTML = q.question;
+            const optionsEl = document.getElementById('options-container');
+            optionsEl.innerHTML = '';
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            q.options.forEach((opt, index) => {
+                const button = document.createElement('button');
+                button.className = "w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-400 bg-gray-50 hover:bg-blue-50 font-medium text-gray-700 transition-all duration-200 transform hover:-translate-y-0.5";
+                button.innerHTML = `<span class="inline-block w-6 font-bold text-blue-500">${String.fromCharCode(65+index)}.</span> ${opt}`;
+                button.onclick = () => selectOption(index, opt, button);
+                optionsEl.appendChild(button);
+            });
+        }
+
+        function selectOption(selectedIndex, selectedText, btnElement) {
+            if (isAnswered) return;
+            isAnswered = true;
+
+            const q = quizData[currentQuestion];
+            const isCorrect = (selectedIndex === q.correct);
+            const allButtons = document.getElementById('options-container').querySelectorAll('button');
+
+            // Simpan ke array jawaban user untuk dikirim ke GAS (format: "A. Sweet (Benar)" atau "B. Asam (Salah)")
+            const prefix = String.fromCharCode(65+selectedIndex) + ". ";
+            const statusTxt = isCorrect ? " (Benar)" : " (Salah)";
+            userDetailedAnswers.push(prefix + selectedText + statusTxt);
+
+            allButtons.forEach((btn, idx) => {
+                btn.style.pointerEvents = 'none';
+                if (idx === q.correct) {
+                    btn.classList.remove('border-gray-200', 'bg-gray-50');
+                    btn.classList.add('border-green-500', 'bg-green-100', 'text-green-800', 'shadow-md');
+                } else if (idx === selectedIndex && !isCorrect) {
+                    btn.classList.remove('border-gray-200', 'bg-gray-50');
+                    btn.classList.add('border-red-500', 'bg-red-100', 'text-red-800');
+                } else {
+                    btn.style.opacity = '0.5';
+                }
+            });
+
+            // Hitung nilai (dinamis, misal max 100)
+            const pointPerQuestion = 100 / quizData.length;
+            if (isCorrect) score += pointPerQuestion;
+
+            const feedbackEl = document.getElementById('quiz-feedback');
+            const feedbackTitle = document.getElementById('feedback-title');
+            
+            feedbackEl.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'bg-red-50', 'border-red-200');
+            
+            if (isCorrect) {
+                feedbackEl.classList.add('bg-green-50', 'border-green-200');
+                document.getElementById('feedback-icon').innerText = "🌟";
+                feedbackTitle.innerText = "Excellent!";
+                feedbackTitle.className = "font-bold text-lg mb-1 text-green-700";
+            } else {
+                feedbackEl.classList.add('bg-red-50', 'border-red-200');
+                document.getElementById('feedback-icon').innerText = "💡";
+                feedbackTitle.innerText = "Let's learn from this!";
+                feedbackTitle.className = "font-bold text-lg mb-1 text-red-700";
+            }
+            
+            document.getElementById('feedback-desc').innerHTML = `<b>Explanation:</b> ${q.explanation}`;
+            
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.remove('hidden');
+            if(currentQuestion === quizData.length - 1) {
+                nextBtn.innerHTML = "See Final Score 🏆";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        async function showResults() {
+            document.getElementById('quiz-progress').style.width = "100%";
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-header').classList.add('hidden');
+            
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.classList.remove('hidden');
+            
+            // Pembulatan Skor
+            const finalScore = Math.round(score);
+
+            document.getElementById('res-student-name').innerText = currentStudentName;
+            document.getElementById('res-student-class').innerText = currentStudentClass;
+            document.getElementById('final-score').innerText = finalScore;
+            
+            let message = "";
+            if(finalScore >= 90) message = "Luar biasa! Kamu sangat menguasai kosakata kuliner Biluhu dalam bahasa Inggris! 🤩";
+            else if(finalScore >= 60) message = "Bagus sekali! Kamu sudah memahami sebagian besar materi. Tingkatkan terus! 👍";
+            else message = "Jangan menyerah! Pelajari kembali materi di modul 'Learn' dan coba lagi! 💪";
+            
+            document.getElementById('result-message').innerText = message;
+
+            // ==========================================
+            // POST DATA KE GOOGLE SHEETS
+            // ==========================================
+            const statusEl = document.getElementById('save-status');
+            
+            if (GAS_URL === "ISI_DENGAN_URL_WEB_APP_ANDA_DISINI") {
+                statusEl.className = "bg-yellow-100 text-yellow-800 p-2 rounded text-xs font-bold";
+                statusEl.innerHTML = "⚠️ Data tidak tersimpan. Guru belum mensetting URL GAS.";
+                return;
+            }
+
+            statusEl.className = "bg-blue-100 text-blue-700 p-2 rounded text-xs font-bold animate-pulse";
+            statusEl.innerHTML = `<div class="loader" style="width: 12px; height: 12px; border-width: 2px;"></div> Menyimpan hasil ke Google Sheets...`;
+
+            const pointPerQuestion = 100 / quizData.length;
+            const totalBenar = Math.round(finalScore / pointPerQuestion);
+            const totalSalah = quizData.length - totalBenar;
+
+            const postData = {
+                action: "saveResult",
+                name: currentStudentName,
+                className: currentStudentClass,
+                score: finalScore,
+                totalCorrect: totalBenar,
+                totalWrong: totalSalah,
+                answers: userDetailedAnswers
+            };
+
+            try {
+                // Gunakan text/plain untuk menghindari masalah Preflight CORS di Google Apps Script
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(postData)
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    statusEl.className = "bg-green-100 text-green-700 p-2 rounded text-xs font-bold";
+                    statusEl.innerHTML = "✅ Hasil sukses disimpan ke Database Guru!";
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (e) {
+                console.error("Gagal menyimpan ke Sheets:", e);
+                statusEl.className = "bg-red-100 text-red-700 p-2 rounded text-xs font-bold";
+                statusEl.innerHTML = "❌ Gagal menyimpan data. Silakan cek koneksi internet.";
+            }
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('result-container').classList.add('hidden');
+            document.getElementById('quiz-auth-card').classList.remove('hidden');
+            // Form dikosongkan agar bisa isi lagi
+            document.getElementById('student-name-input').value = "";
+            document.getElementById('student-class-input').value = "";
+        }
+
+        // ==========================================
+        // UI & ANIMATION LOGIC (Flashcards, Nav)
+        // ==========================================
+        function nav(tabId) {
+            document.querySelectorAll('.module-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('module-' + tabId).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-pastel-yellow', 'shadow-md');
+                btn.classList.add('hover:bg-pastel-yellow', 'hover:shadow-md');
+            });
+            let activeBtn = document.getElementById('nav-' + tabId);
+            activeBtn.classList.remove('hover:bg-pastel-yellow', 'hover:shadow-md');
+            activeBtn.classList.add('bg-pastel-yellow', 'shadow-md');
+            window.scrollTo(0, 0);
+        }
+
+        const fcData = [
+            { id: 1, title: "Binte Biluhuta", icon: "🌽🍲", hint: "Apa rasa utamanya?", answer: "Savory & Spicy", ind: "(Gurih & Pedas)", color: "from-amber-200 to-orange-200" },
+            { id: 2, title: "Es Kelapa Muda", icon: "🥥🧉", hint: "Bagaimana rasanya di lidah?", answer: "Sweet & Refreshing", ind: "(Manis & Menyegarkan)", color: "from-blue-200 to-cyan-200" },
+            { id: 3, title: "Ikan Bakar (Skin)", icon: "🐟🔥", hint: "Bagaimana tekstur kulitnya?", answer: "Crunchy", ind: "(Renyah)", color: "from-yellow-200 to-amber-200" },
+            { id: 4, title: "Dabu-dabu", icon: "🌶️🍋", hint: "Coba tebak kombinasi rasanya!", answer: "Spicy & Sour", ind: "(Pedas & Asam)", color: "from-red-200 to-rose-200" },
+            { id: 5, title: "Ilabulo", icon: "🍗🍡", hint: "Bagaimana tekstur sagunya?", answer: "Chewy & Sticky", ind: "(Kenyal & Lengket)", color: "from-pink-200 to-fuchsia-200" }
+        ];
+
+        let fcMasteredCount = 0;
+        function renderFlashcards() {
+            const fcContainer = document.getElementById('flashcard-container');
+            fcContainer.innerHTML = '';
+            fcData.forEach((card) => {
+                fcContainer.insertAdjacentHTML('beforeend', `
+                    <div class="v-flashcard pulse-anim" id="fc-${card.id}" onclick="flipCard(${card.id})">
+                        <div class="v-flashcard-inner shadow-xl rounded-3xl">
+                            <div class="v-flashcard-front">
+                                <span class="text-5xl mb-3 drop-shadow-md">${card.icon}</span>
+                                <h3 class="text-3xl font-black text-gray-800 tracking-tight text-center">${card.title}</h3>
+                                <div class="mt-4 bg-blue-100 text-blue-700 px-4 py-2 rounded-full font-bold text-sm flex items-center gap-2 animate-bounce">
+                                    <span>👉</span> ${card.hint}
+                                </div>
+                            </div>
+                            <div class="v-flashcard-back bg-gradient-to-br ${card.color}">
+                                <h3 class="text-4xl font-black text-gray-900 drop-shadow-sm mb-1 text-center">${card.answer}</h3>
+                                <p class="text-xl font-bold text-gray-800 mb-6 opacity-80">${card.ind}</p>
+                                <div class="flex gap-4 w-full justify-center px-4">
+                                    <button onclick="markMastered(event, ${card.id})" class="flex-1 max-w-[150px] bg-white/90 hover:bg-white text-green-600 border-b-4 border-green-500 font-black py-3 px-4 rounded-2xl shadow-md transition transform hover:-translate-y-1 active:translate-y-1 active:border-b-0 text-sm">
+                                        ✅ Ingat!
+                                    </button>
+                                    <button onclick="flipCard(${card.id}, event)" class="flex-1 max-w-[150px] bg-white/50 hover:bg-white/80 text-gray-700 font-bold py-3 px-4 rounded-2xl shadow-sm transition active:scale-95 text-sm">
+                                        🔄 Balik
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
+        function flipCard(id, event) {
+            if(event) event.stopPropagation();
+            const cardEl = document.getElementById(`fc-${id}`);
+            if(!cardEl.classList.contains('mastered')) {
+                cardEl.classList.toggle('flipped');
+                cardEl.classList.remove('pulse-anim'); 
+            }
+        }
+
+        function markMastered(event, id) {
+            event.stopPropagation();
+            const cardEl = document.getElementById(`fc-${id}`);
+            
+            if(!cardEl.classList.contains('mastered')) {
+                cardEl.classList.add('mastered');
+                cardEl.classList.add('pointer-events-none');
+                
+                fcMasteredCount++;
+                document.getElementById('fc-score').innerText = fcMasteredCount;
+                document.getElementById('fc-progress').style.width = `${(fcMasteredCount / fcData.length) * 100}%`;
+                
+                createFloatingEmoji(event.clientX, event.clientY, "🌟");
+
+                if(fcMasteredCount === fcData.length) {
+                    setTimeout(() => {
+                        const compEl = document.getElementById('fc-complete');
+                        compEl.classList.remove('hidden');
+                        compEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 600);
+                }
+            }
+        }
+
+        function createFloatingEmoji(x, y, emoji) {
+            const el = document.createElement('div');
+            el.innerText = emoji;
+            el.style.position = 'fixed';
+            el.style.left = `${x - 20}px`; el.style.top = `${y - 20}px`;
+            el.style.fontSize = '3rem'; el.style.pointerEvents = 'none';
+            el.style.transition = 'all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            el.style.zIndex = '9999'; el.style.opacity = '1';
+            document.body.appendChild(el);
+            
+            setTimeout(() => {
+                el.style.transform = `translateY(-150px) scale(1.5) rotate(20deg)`;
+                el.style.opacity = '0';
+            }, 50);
+            setTimeout(() => el.remove(), 1050);
+        }
+
+        // Initialize application on load
+        window.onload = function() {
+            nav('home');
+            renderFlashcards();
+            fetchQuestionsFromGAS(); // Memanggil data soal ke Google Sheets dari background
+        };
+    </script>
+</body>
+</html>
